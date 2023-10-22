@@ -1,5 +1,5 @@
 asgiref==3.7.2
 Django==4.2.6
-djapy==0.1.2
+djapy @ git+https://github.com/Bishwas-py/djapy.git@f852d897d058883b36286a9d65f15b4105b1b5c1
 sqlparse==0.4.4
 tzdata==2023.3
