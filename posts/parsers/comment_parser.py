@@ -1,6 +1,6 @@
 import posts.models
 from posts.models import PolymorphicComments
-from posts.parsers.parser_utils import get_p
+from posts.parsers.parser_utils import get_poly
 
 
 def parse_comment_with_post(post: 'posts.models.Post') -> list:
@@ -16,13 +16,13 @@ def parse_comment(comment: 'PolymorphicComments') -> dict:
         'user': comment.user.username,
         'comment_text': comment.comment_text,
         'created_at': comment.created_at,
-        'p': get_p(comment)
+        'poly': get_poly(comment)
     }
 
 
 parser = {
-    'p': get_p
+    'poly': get_poly
 }
 
-basic_fields = ['id', 'comment_text', 'created_at', 'p']
+basic_fields = ['id', 'comment_text', 'created_at', 'poly']
 deleted_fields = [*basic_fields, 'soft_deleted_at']

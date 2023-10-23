@@ -1,6 +1,7 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import QuerySet
 from django.utils import timezone
 
 
@@ -11,13 +12,13 @@ class SoftDeleteQuerySet(models.QuerySet):
     def hard_delete(self):
         return super().delete()
 
-    def alive(self):
+    def alive(self) -> QuerySet['GenericModel']:
         return self.filter(soft_deleted_at__isnull=True)
 
     def dead(self):
         return self.exclude(soft_deleted_at__isnull=True)
 
-    def get_all_poly(self, content_object):
+    def get_all_poly(self, content_object) -> QuerySet['GenericModel']:
         existing_like = self.filter(
             object_id=content_object.id,
             content_type=ContentType.objects.get_for_model(content_object)

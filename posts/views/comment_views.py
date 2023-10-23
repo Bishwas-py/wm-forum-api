@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from djapy.auth.dec import djapy_login_required
 from djapy.data.dec import input_required
-from djapy.wrappers.dec import model_to_json_node, node_to_json_response, method_to_view
+from djapy.wrappers.dec import model_to_json_node, node_to_json_response, method_to_view, object_to_json_node
 
 from posts.models import Post, PolymorphicComments
 from posts.parsers import comment_parser
@@ -39,3 +39,26 @@ def comment_view(request, *args, **kwargs):
         'post': comment_on_post,
         'delete': delete_comment
     }
+
+
+@csrf_exempt
+@djapy_login_required
+@node_to_json_response
+@model_to_json_node(comment_parser.basic_fields, object_parser=comment_parser.parser)
+def list_post_comments(request, post_id, *args, **kwargs):
+    """
+    Unlike a post and return the likes that are unliked.
+    """
+    post = Post.objects.get(id=post_id)
+    likes = PolymorphicComments.objects.get_all_poly(post).alive()
+    return likes
+
+
+@csrf_exempt
+@djapy_login_required
+@node_to_json_response
+@object_to_json_node(['count'])
+def like_post_count(request, post_id, *args, **kwargs):
+    post = Post.objects.get(id=post_id)
+    likes = PolymorphicComments.objects.get_all_poly(post).alive()
+    return likes
