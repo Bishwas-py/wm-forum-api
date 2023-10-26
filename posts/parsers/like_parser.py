@@ -3,11 +3,9 @@ from posts.models import PolymorphicLike
 from posts.parsers.parser_utils import get_poly
 
 
-def parse_likes_with_post(post: 'posts.models.Post') -> list:
-    likes = PolymorphicLike.objects.get_all_poly(post)
-    return [
-        parse_like(like) for like in likes.alive()
-    ]
+def has_likes(post: 'posts.models.Post') -> list:
+    likes = PolymorphicLike.objects.alive().get_all_poly(post)
+    return likes.exists()
 
 
 def parse_like(like: 'PolymorphicLike') -> dict:

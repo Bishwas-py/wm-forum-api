@@ -1,8 +1,9 @@
-from posts.parsers import comment_parser, like_parser
+from posts.parsers import comment_parser, like_parser, tag_parse
 
 parser = {
-    'comments': comment_parser.parse_comment_with_post,
-    'likes': like_parser.parse_likes_with_post
+    'has_comments': comment_parser.has_comments,
+    'has_likes': like_parser.has_likes,
+    'tags': tag_parse.tags
 }
 
-fields = ['id', 'title', 'body', 'comments', 'likes']
+fields = ['id', 'title', 'body', 'has_comments', 'has_likes', 'tags']

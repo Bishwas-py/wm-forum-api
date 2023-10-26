@@ -3,11 +3,9 @@ from posts.models import PolymorphicComments
 from posts.parsers.parser_utils import get_poly
 
 
-def parse_comment_with_post(post: 'posts.models.Post') -> list:
-    comments = PolymorphicComments.objects.get_all_poly(post)
-    return [
-        parse_comment(comment) for comment in comments.alive()
-    ]
+def has_comments(post: 'posts.models.Post') -> list:
+    comments = PolymorphicComments.objects.alive().get_all_poly(post)
+    return comments.exists()
 
 
 def parse_comment(comment: 'PolymorphicComments') -> dict:

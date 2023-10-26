@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-from generics.models import GenericModel, Polymorphic
+from generics.abstract_models import GenericModel, Polymorphic
+from generics.models import Publishable
 
 
 class PolymorphicLike(Polymorphic):
@@ -39,10 +39,18 @@ class PolymorphicComments(Polymorphic):
         return comment
 
 
+class Tags(GenericModel):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)  # added by
+    name = models.TextField()
+    publishable = models.ManyToManyField(Publishable)
+
+
 class Post(GenericModel):
     author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=450)
     body = models.TextField()
+    tags = models.ManyToManyField(Tags)
+    publishable = models.ManyToManyField(Publishable)
 
     def __str__(self):
         return self.title
