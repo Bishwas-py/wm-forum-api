@@ -13,21 +13,14 @@ class CreatePostFields:
     tags: list[str]
 
 
-class ViewPublishableQuery:
-    view_content: bool = False
-
-
 @djapy_login_required
 @field_required
 @model_to_json_node(['id', 'title'])
-def create_post(request, data: CreatePostFields, query: ViewPublishableQuery, *args, **kwargs):
+def create_post(request, data: CreatePostFields, *args, **kwargs):
     post = Post.objects.create(
         title=data.title,
         author_id=request.user.id
     )
-    if query.view_content:
-        post.viewer = request.user
-        post.visit_count
     return post
 
 
@@ -48,9 +41,22 @@ def post_view(request, *args, **kwargs):
     }
 
 
+class ViewPublishableQuery:
+    view_content: bool = False
+
+
 @csrf_exempt
 @djapy_login_required
 @node_to_json_response
 @model_to_json_node(post_parser.fields, object_parser=post_parser.parser)
-def get_post_view(request, post_id, *args, **kwargs):
-    return Post.objects.get(id=post_id)
+@field_required
+def get_post_view(request, post_id, query: ViewPublishableQuery, *args, **kwargs):
+    post = Post.objects.get(id=post_id)
+    if query.view_content:
+        post.viewer = request.user
+        publishable, created = post.publishable.get_or_create(
+            viewer=request.user
+        )
+        publishable.view_count += 1
+        publishable.save()
+    return post

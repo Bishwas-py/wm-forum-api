@@ -42,6 +42,9 @@ class PolymorphicComments(Polymorphic):
 class Tags(GenericModel):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)  # added by
     name = models.TextField()
+    iconify_string = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.SlugField(max_length=100, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     publishable = models.ManyToManyField(Publishable)
 
 
@@ -52,5 +55,9 @@ class Post(GenericModel):
     tags = models.ManyToManyField(Tags)
     publishable = models.ManyToManyField(Publishable)
 
+    def view_count(self):
+        self.publishable.all().annotate()
+
     def __str__(self):
         return self.title
+

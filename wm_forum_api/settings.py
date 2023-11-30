@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'posts',
     'generics',
+    'authentication',
     'djapy',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,8 +42,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'djapy.wrappers.mid.HandleErrorMiddleware',
-    'djapy.wrappers.mid.UHandleErrorMiddleware',
+    # 'djapy.wrappers.mid.HandleErrorMiddleware',
+    # 'djapy.wrappers.mid.UHandleErrorMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
