@@ -4,7 +4,7 @@ from django.db import models
 
 class PublishableQuery(models.QuerySet):
     def view_count(self):
-        return self.aggregate(view_count__sum=models.Sum('view_count'), unique_views=models.Count('viewer'))
+        return self.aggregate(view_count__sum=models.Sum('view_count'), viewers_count=models.Count('viewer'))
 
 
 class Publishable(models.Model):

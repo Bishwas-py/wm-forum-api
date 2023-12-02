@@ -12,7 +12,7 @@ class ProfileSchema(Schema):
     image: str | None
 
 
-class UserSchema(Schema):
+class GenericUserSchema(Schema):
     id: int
     username: str
     email: str
@@ -23,4 +23,7 @@ class UserSchema(Schema):
     is_active: bool
     status: StatusSchema
     profile: ProfileSchema
+
+
+class UserSchema(GenericUserSchema):
     user_permissions: list[str] = Field(..., alias="get_user_permissions")

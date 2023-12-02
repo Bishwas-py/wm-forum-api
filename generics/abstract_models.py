@@ -13,7 +13,7 @@ class SoftDeleteQuerySet(models.QuerySet):
     def hard_delete(self):
         return super().delete()
 
-    def alive(self) -> QuerySet['GenericModel']:
+    def alive(self):
         return self.filter(soft_deleted_at__isnull=True)
 
     def dead(self):

@@ -3,32 +3,14 @@ from typing import List
 from ninja import Router, Schema
 from ninja.pagination import paginate
 
-from generics.schemas import Inline
+from generics.schemas import Inline, MessageOut
 from posts.models import Tags
+from posts.schemas import TagsSchema, CreateTagsSchema
 
 router = Router(tags=["Tags"])
 
 
-class TagsSchema(Schema):
-    name: str
-    iconify_string: str
-    slug: str
-    description: str
-    discussions_count: int
-
-    @staticmethod
-    def resolve_discussions_count(obj: Tags):
-        return obj.post_set.count()
-
-
-class CreateTagsSchema(Schema):
-    name: str
-    iconify_string: str
-    slug: str
-    description: str
-
-
-@router.get("/get-all", response=List[TagsSchema], summary="Get all tags")
+@router.get("/get-all", response=List[TagsSchema], summary="Get all tags", auth=None)
 @paginate
 def get_tags(request):
     tags = Tags.objects.all().alive()
@@ -50,3 +32,20 @@ def create_tag(request, data: CreateTagsSchema):
         user=request.auth
     )
     return 201, tag
+
+
+@router.get("/get/{tag_slug}", response={200: TagsSchema, 404: MessageOut},
+            summary="Get a tag by slug", auth=None)
+def get_tag(request, tag_slug: str, increase_view: bool = True):
+    try:
+        tag = Tags.objects.alive().get(slug=tag_slug)
+        if increase_view:
+            tag.increment_view_count(request.user)
+
+        return 200, tag
+    except Tags.DoesNotExist:
+        return 404, {
+            "message": "Tag with this slug does not exist.",
+            "message_type": "error",
+            "alias": "tag_not_found"
+        }
