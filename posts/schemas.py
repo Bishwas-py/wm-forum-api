@@ -1,10 +1,16 @@
 from typing import List
 
-from django.utils.html import strip_tags, strip_spaces_between_tags
+import bleach
+from django.utils.html import strip_tags, escape
 from ninja import Schema
 import posts.models
 from authentication.schemas.user_schema import GenericUserSchema
 from generics.schemas import GenericSchema
+
+BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong', 'a', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'br',
+                       'hr', 'img']
+
+BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'src', 'alt']
 
 
 class PublishableSchema(Schema):
@@ -53,6 +59,10 @@ class PostSchema(GenericSchema):
     @staticmethod
     def resolve_body_short_escaped(obj: 'posts.models.Post'):
         return strip_tags(obj.body)[:200] + '...' if len(obj.body) > 200 else strip_tags(obj.body)
+
+    @staticmethod
+    def resolve_body(obj: 'posts.models.Post'):
+        return bleach.clean(obj.body, tags=BLEACH_ALLOWED_TAGS, attributes=BLEACH_ALLOWED_ATTRIBUTES, strip=True)
 
     @staticmethod
     def resolve_publishable(obj: 'posts.models.Post'):
