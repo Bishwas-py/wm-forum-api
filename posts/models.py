@@ -1,9 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-from generics.abstract_models import GenericModel, Polymorphic
+from generics.abstract_models import GenericModel, Polymorphic, Publishablizer
 from generics.models import Publishable
 
 
@@ -40,36 +39,23 @@ class PolymorphicComments(Polymorphic):
         return comment
 
 
-class Tags(GenericModel):
+class Tags(GenericModel, Publishablizer):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)  # added by
     name = models.TextField()
     iconify_string = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    publishable = models.ManyToManyField(Publishable, blank=True)
     slug = models.SlugField(max_length=100, null=True, blank=True, unique=True)
-
-    def increment_view_count(self, user):
-        if user and user.is_authenticated:
-            publishable, _ = self.publishable.get_or_create(viewer=user)
-        else:
-            publishable, _ = self.publishable.get_or_create()
-        publishable.view_count += 1
-        publishable.save()
 
     def __str__(self):
         return self.name
 
 
-class Post(GenericModel):
+class Post(GenericModel, Publishablizer):
     author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=450)
     body = models.TextField()
     tags = models.ManyToManyField(Tags)
-    publishable = models.ManyToManyField(Publishable, blank=True)
     slug = models.SlugField(max_length=450, null=True, blank=True, unique=True)
-
-    def view_count(self):
-        self.publishable.all().annotate()
 
     def __str__(self):
         return self.title

@@ -9,6 +9,8 @@ class PublishableQuery(models.QuerySet):
 
 class Publishable(models.Model):
     viewer = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
+    viewer_ip = models.GenericIPAddressField(null=True, blank=True)
+    last_viewed_at = models.DateTimeField(auto_now=True)
     view_count = models.PositiveIntegerField(default=0)
 
     objects = PublishableQuery.as_manager()

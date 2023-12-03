@@ -39,9 +39,7 @@ def create_tag(request, data: CreateTagsSchema):
 def get_tag(request, tag_slug: str, increase_view: bool = True):
     try:
         tag = Tags.objects.alive().get(slug=tag_slug)
-        if increase_view:
-            tag.increment_view_count(request.user)
-
+        tag.increment_view_count(request.user, increase_view)
         return 200, tag
     except Tags.DoesNotExist:
         return 404, {

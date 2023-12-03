@@ -1,6 +1,9 @@
+from typing import List
+
 from ninja import Schema
 import posts.models
 from authentication.schemas.user_schema import GenericUserSchema
+from generics.schemas import GenericSchema
 
 
 class PublishableSchema(Schema):
@@ -32,12 +35,13 @@ class CreateTagsSchema(Schema):
     description: str
 
 
-class PostSchema(Schema):
-    author: GenericUserSchema
+class PostSchema(GenericSchema):
+    id: int
     title: str
     slug: str
     body: str
     publishable: PublishableSchema
+    author: GenericUserSchema
     tags: list[TagsSchema]
 
     @staticmethod
@@ -47,3 +51,23 @@ class PostSchema(Schema):
     @staticmethod
     def resolve_publishable(obj: 'posts.models.Post'):
         return obj.publishable.all().view_count()
+
+
+class LikeSchema(GenericSchema):
+    user: GenericUserSchema
+
+
+class CommentSchema(GenericSchema):
+    user: GenericUserSchema
+    comment_text: str
+    likes: List[LikeSchema]
+
+    @staticmethod
+    def resolve_likes(obj: 'posts.models.PolymorphicComments'):
+        return obj.likes.all()
+
+
+class CreateCommentSchema(Schema):
+    comment_text: str
+
+

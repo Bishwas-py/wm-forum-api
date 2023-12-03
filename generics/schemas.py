@@ -1,5 +1,6 @@
 from typing import Literal
 from ninja import Schema
+from pydantic.schema import datetime
 
 
 class MessageOut(Schema):
@@ -63,3 +64,10 @@ class InlineMessageOut(MessageOut, Inline):
 
 class DetailMessageOut(MessageOut, DetailOut):
     pass
+
+
+class GenericSchema(Schema):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+    soft_deleted_at: datetime | None = None

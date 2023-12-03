@@ -5,6 +5,8 @@ from django.db import models
 from django.db.models import QuerySet
 from django.utils import timezone
 
+from generics.models import Publishable
+
 
 class SoftDeleteQuerySet(models.QuerySet):
     def soft_delete(self):
@@ -61,6 +63,32 @@ class Polymorphic(GenericModel):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     content_type = models.ForeignKey('contenttypes.ContentType', on_delete=models.PROTECT)
+
+    class Meta:
+        abstract = True
+
+
+class Publishablizer(models.Model):
+    publishable = models.ManyToManyField(Publishable, blank=True)
+
+    def increment_view_count(self, request, increase_view=True, increase_by=1):
+
+        if increase_view and increase_by > 0:
+            viewer_ip = request.META.get('REMOTE_ADDR')
+
+            publishable_dict = {"viewer_ip": viewer_ip}
+
+            if request.user and request.user.is_authenticated:
+                publishable_dict.update({"viewer": request.user})
+
+            publishable, created = self.publishable.get_or_create(**publishable_dict)
+
+            # ensure that the view count is only increased once per user or ip in a minute
+            if created or not publishable.last_viewed_at or publishable.last_viewed_at < timezone.now() - timezone.timedelta(
+                    minutes=3):
+                publishable.last_viewed_at = timezone.now()
+                publishable.view_count += increase_by
+                publishable.save()
 
     class Meta:
         abstract = True
