@@ -9,7 +9,9 @@ from generics.schemas import GenericSchema
 
 BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong', 'a',
                        'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'br',
-                       'hr', 'img']
+                       'hr', 'img', 'blockquote', 'pre', 'code', 'table', 'thead',
+                       'tr', 'th', 'td', 'tbody', 'strike', 'del', 'sup', 'sub',
+                       ]
 
 BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'src', 'alt', 'rel', 'target']
 
