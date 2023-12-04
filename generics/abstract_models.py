@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.handlers.wsgi import WSGIRequest
 from django.db import models
 from django.db.models import QuerySet
 from django.utils import timezone
@@ -71,11 +72,10 @@ class Polymorphic(GenericModel):
 class Publishablizer(models.Model):
     publishable = models.ManyToManyField(Publishable, blank=True)
 
-    def increment_view_count(self, request, increase_view=True, increase_by=1):
+    def increment_view_count(self, request: WSGIRequest, increase_view=True, increase_by=1):
 
         if increase_view and increase_by > 0:
-            viewer_ip = request.META.get('REMOTE_ADDR')
-
+            viewer_ip = request.headers.get('Client-IP')
             publishable_dict = {"viewer_ip": viewer_ip}
 
             if request.user and request.user.is_authenticated:

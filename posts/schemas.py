@@ -7,10 +7,21 @@ import posts.models
 from authentication.schemas.user_schema import GenericUserSchema
 from generics.schemas import GenericSchema
 
-BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong', 'a', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'br',
+BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong', 'a',
+                       'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'br',
                        'hr', 'img']
 
-BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'src', 'alt']
+BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'src', 'alt', 'rel', 'target']
+
+
+def set_nofollow(attrs, new=False):
+    attrs[(None, 'rel')] = 'nofollow'
+    return attrs
+
+
+def set_target(attrs, new=False):
+    attrs[(None, 'target')] = '_blank'
+    return attrs
 
 
 class PublishableSchema(Schema):
@@ -62,7 +73,11 @@ class PostSchema(GenericSchema):
 
     @staticmethod
     def resolve_body(obj: 'posts.models.Post'):
-        return bleach.clean(obj.body, tags=BLEACH_ALLOWED_TAGS, attributes=BLEACH_ALLOWED_ATTRIBUTES, strip=True)
+        linkified_body = bleach.linkify(obj.body, callbacks=[set_nofollow, set_target])
+        return bleach.clean(linkified_body,
+                            tags=BLEACH_ALLOWED_TAGS,
+                            attributes=BLEACH_ALLOWED_ATTRIBUTES,
+                            strip=False)
 
     @staticmethod
     def resolve_publishable(obj: 'posts.models.Post'):

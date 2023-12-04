@@ -66,21 +66,21 @@ def login_user(request, data: LoginSchema):
     user = get_user_model().objects.filter(username=data.username).first()
 
     if not user:
-        return 400, LoginInline(
+        return 400, dict(
             inline={
                 "username": "User with this username does not exist."
             }
         )
 
     if not user.check_password(data.password):
-        return 400, LoginInline(
+        return 400, dict(
             inline={
                 "password": "Password is incorrect."
             }
         )
 
     login(request, user)
-    return 200, MessageOut(
+    return dict(
         message="User logged in successfully.",
         message_type="success",
         alias="login_success"
