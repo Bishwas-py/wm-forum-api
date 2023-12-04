@@ -1,3 +1,4 @@
+from django.http import HttpRequest
 from ninja import Schema, Field
 
 
@@ -10,6 +11,14 @@ class ProfileSchema(Schema):
     location: str | None
     birth_date: str | None
     image: str | None
+
+    @staticmethod
+    def resolve_image(obj, context):
+        request: HttpRequest = context["request"]
+        site = request.scheme + "://" + request.get_host()
+        if obj.image:
+            return site + obj.image.url
+        return None
 
 
 class GenericUserSchema(Schema):
