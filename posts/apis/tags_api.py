@@ -1,6 +1,6 @@
 from typing import List
 
-from ninja import Router, Schema
+from ninja import Router, Header, Schema
 from ninja.pagination import paginate
 
 from generics.schemas import Inline, MessageOut
@@ -36,10 +36,10 @@ def create_tag(request, data: CreateTagsSchema):
 
 @router.get("/get/{tag_slug}", response={200: TagsSchema, 404: MessageOut},
             summary="Get a tag by slug", auth=None)
-def get_tag(request, tag_slug: str, increase_view: bool = True):
+def get_tag(request, tag_slug: str, client_ip: Header[str], increase_view: bool = True):
     try:
         tag = Tags.objects.alive().get(slug=tag_slug)
-        tag.increment_view_count(request.user, increase_view)
+        tag.increment_view_count(request, client_ip, increase_view)
         return 200, tag
     except Tags.DoesNotExist:
         return 404, {

@@ -1,6 +1,6 @@
 from typing import List
 
-from ninja import Router, Schema
+from ninja import Router, Schema, Header
 from ninja.pagination import paginate
 
 from posts.models import Post, PolymorphicComments
@@ -17,9 +17,9 @@ def get_posts(request):
 
 
 @router.get("/get/{post_slug}", response=PostSchema, summary="Get a post", auth=None)
-def get_post(request, post_slug: str, increase_view: bool = True):
+def get_post(request, post_slug: str, client_ip: Header[str], increase_view: bool = True):
     post = Post.objects.alive().get(slug=post_slug)
-    post.increment_view_count(request, increase_view)
+    post.increment_view_count(request, client_ip, increase_view)
     return post
 
 
