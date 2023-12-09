@@ -16,3 +16,4 @@ class LoginInlineParam(Schema):
 
 class LoginInline(Schema):
     inline: LoginInlineParam
+

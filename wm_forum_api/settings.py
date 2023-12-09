@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     'posts',
     'generics',
     'authentication',
-    'djapy',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
