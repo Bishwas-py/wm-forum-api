@@ -31,7 +31,7 @@ class PublishableSchema(Schema):
     viewers_count: int | None
 
 
-class TagsSchema(Schema):
+class TagsSchema(GenericSchema):
     name: str
     iconify_string: str
     slug: str
