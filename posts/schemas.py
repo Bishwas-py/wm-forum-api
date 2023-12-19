@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import bleach
 from django.utils.html import strip_tags, escape
@@ -53,6 +53,13 @@ class CreateTagsSchema(Schema):
     iconify_string: str
     slug: str
     description: str
+
+
+class PostCreateSchema(Schema):
+    body: str
+    title: str
+    tag_ids: List[int] = []
+    slug: Optional[str] = None
 
 
 class PostSchema(GenericSchema):

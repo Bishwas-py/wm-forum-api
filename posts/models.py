@@ -1,6 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils.text import slugify
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from generics.abstract_models import GenericModel, Polymorphic, Publishablizer
 from generics.models import Publishable
@@ -59,3 +62,10 @@ class Post(GenericModel, Publishablizer):
 
     def __str__(self):
         return self.title
+
+
+@receiver(post_save, sender=Post)
+def create_post_slug(sender, instance: Post, created, **kwargs):
+    if created:
+        instance.slug = slugify(f'{instance.title}-{instance.id}')
+        instance.save()
