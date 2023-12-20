@@ -7,6 +7,7 @@ from django.dispatch import receiver
 
 from generics.abstract_models import GenericModel, Polymorphic, Publishablizer
 from generics.models import Publishable
+from posts.defaults import MAX_TITLE_LENGTH, MAX_SLUG_LENGTH
 
 
 class PolymorphicLike(Polymorphic):
@@ -55,10 +56,10 @@ class Tags(GenericModel, Publishablizer):
 
 class Post(GenericModel, Publishablizer):
     author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
-    title = models.CharField(max_length=450)
+    title = models.CharField(max_length=MAX_TITLE_LENGTH)
     body = models.TextField()
     tags = models.ManyToManyField(Tags)
-    slug = models.SlugField(max_length=450, null=True, blank=True, unique=True)
+    slug = models.SlugField(max_length=MAX_SLUG_LENGTH, null=True, blank=True, unique=True)
 
     def __str__(self):
         return self.title

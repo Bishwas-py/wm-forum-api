@@ -33,15 +33,7 @@ def create_post(request, data: PostCreateSchema):
             'message_type': 'warning',
             'alias': 'post_slug_exists'
         }
-
-    if not tags.exists():
-        return 400, {
-            'message': 'No tags found',
-            'message_type': 'warning',
-            'alias': 'no_tags_found'
-        }
-
-    if Post.objects.filter(title=data.title, author=request.user, tags__in=tags).exists():
+    if Post.objects.filter(title=data.title, author=request.user).exists():
         return 400, {
             'message': 'An exact same post is already created by you',
             'message_type': 'warning',
