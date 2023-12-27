@@ -7,7 +7,7 @@ from collections import defaultdict
 from ninja import NinjaAPI
 
 from authentication.apis import auth_api, users_api
-from posts.apis import tags_api, posts_api
+from posts.apis import tags_api, posts_api, comment_api
 from utils.ninja_exception import MessageValueError
 from utils.symbols import detach_message
 
@@ -27,6 +27,7 @@ api.add_router("/auth", auth_api.router)
 api.add_router("/user", users_api.router)
 api.add_router("/tags", tags_api.router)
 api.add_router("/posts", posts_api.router)
+api.add_router("/comments", comment_api.router)
 
 
 @api.exception_handler(ValidationError)

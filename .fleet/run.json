@@ -12,6 +12,7 @@
                 "POSTGRES_PASSWORD": "postgres",
                 "OPENAI_KEY": "your_openai_key"
             },
+            
         },
 
     ]

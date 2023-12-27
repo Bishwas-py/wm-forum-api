@@ -1,3 +1,4 @@
+import time
 from typing import List
 
 from ninja import Router, Header, Schema
@@ -5,7 +6,7 @@ from ninja.pagination import paginate
 
 from generics.schemas import Inline, MessageOut
 from posts.models import Tags
-from posts.schemas import TagsSchema, CreateTagsSchema
+from posts.schemas import TagsSchema, CreateTagsSchema, PostSchema
 
 router = Router(tags=["Tags"])
 
@@ -15,6 +16,18 @@ router = Router(tags=["Tags"])
 def get_tags(request):
     tags = Tags.objects.all().alive()
     return tags
+
+
+@router.get("/get-all-posts-by-tag/{tag_slug}", response=List[PostSchema], summary="Get all posts of a tag", auth=None)
+@paginate
+def get_tags(request, tag_slug: str):
+    try:
+        tag = Tags.objects.alive().get(slug=tag_slug)
+        posts = tag.post_set.all().alive()
+        print(posts)
+        return posts
+    except Tags.DoesNotExist:
+        return []
 
 
 @router.post("/create", response={201: TagsSchema, 400: Inline}, summary="Create a new tag")

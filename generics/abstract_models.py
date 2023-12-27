@@ -10,6 +10,7 @@ from generics.models import Publishable
 
 VIEW_INCREMENT_MINUTES = 3
 
+
 class SoftDeleteQuerySet(models.QuerySet):
     def soft_delete(self):
         return self.update(soft_deleted_at=timezone.now())
@@ -51,6 +52,7 @@ class GenericModel(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ['-created_at']
 
     def soft_delete(self):
         self.soft_deleted_at = timezone.now()

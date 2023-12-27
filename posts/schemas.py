@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Literal
 
 import bleach
 from django.utils.html import strip_tags

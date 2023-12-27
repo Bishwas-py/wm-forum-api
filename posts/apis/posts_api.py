@@ -4,8 +4,8 @@ from ninja import Router, Schema, Header
 from ninja.pagination import paginate
 
 from generics.schemas import MessageOut
-from posts.models import Post, PolymorphicComments, Tags
-from posts.schemas import PostSchema, CommentSchema, CreateCommentSchema, PostCreateSchema
+from posts.models import Post, PolymorphicComments, Tags, PolymorphicLike
+from posts.schemas import PostSchema, CommentSchema, CreateCommentSchema, PostCreateSchema, LikeSchema
 
 router = Router(tags=["Posts"])
 
@@ -48,17 +48,3 @@ def create_post(request, data: PostCreateSchema):
     )
     post.tags.set(tags)
     return 201, post
-
-
-@router.get("/get/comments/{post_id}", response=List[CommentSchema], summary="Get all comments on a post", auth=None)
-def get_post_comment(request, post_id: int):
-    post = Post.objects.alive().get(id=post_id)
-    comments = PolymorphicComments.objects.get_all_poly(post).alive()
-    return comments
-
-
-@router.post("/create/comment/{post_id}", response=CommentSchema, summary="Create a comment on a post")
-def create_post_comment(request, post_id: int, data: CreateCommentSchema):
-    post = Post.objects.alive().get(id=post_id)
-    comment = PolymorphicComments.create_comment(user=request.user, content_object=post, comment_text=data.comment_text)
-    return comment
